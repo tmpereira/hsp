@@ -6,7 +6,6 @@ def get_fsm_files(path):
     import glob, os
     arq = []
     os.chdir(path)
-    path = path + '\\';
     for file in glob.glob("*.fsm"):
         arq.append(path +  file)
     return arq
