@@ -205,6 +205,7 @@ def binned(data):
     
 def rand(data,k):
     import numpy as np
+    r = data['r']
     labels = np.random.permutation(r.shape[0])[:k]
     sel = np.zeros((r.shape[0])).astype('bool')
     sel[labels] = True
