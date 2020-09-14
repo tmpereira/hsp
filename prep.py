@@ -205,11 +205,12 @@ def binned(data):
     
 def rand(data,k):
     import numpy as np
-    points = (np.random.randint(data['r'].shape[0],size=k))
-    sel = np.zeros_like(data['sel'])
-    sel[points] = True
-    data['r'] = data['r'][sel][:]
-    data['sel'][data['sel']] = sel;
+    labels = np.random.permutation(r.shape[0])[:k]
+    sel = np.zeros((r.shape[0])).astype('bool')
+    sel[labels] = True
+    data['r'] = r[labels,:]
+    data['sel'][data['sel']] = (sel)
+
      # adicionando info ao log
     linha = '\n selaçao de ' + str(k) + ' pixels de maneira aleatória'
     print(linha,end='')
