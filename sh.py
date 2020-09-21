@@ -1,5 +1,6 @@
 ''' submodulo que faz os graficos do hsp'''
- 
+## cria uma imagem baseado na intensidade  
+
 def intt(datta,b):
     import matplotlib.pyplot as plt
     import numpy as np
@@ -40,7 +41,7 @@ def area(data,a,b):
     plt.title(l)
     plt.show()
     
-    
+## cria uma imagem baseado alpha de uma região entre ini1 e fim1 alpha e definido pela eq spci = alpha*meanspc     
 def mean(data,ini1,fim1):
     import numpy as np
     import matplotlib.pyplot as plt
@@ -62,7 +63,7 @@ def mean(data,ini1,fim1):
     l = 'imagem da meanspc entre ' +str(ini1)+ ' cm-1'+str(fim1)+ ' cm-1 \n ' + str(data['filename'])[:-4]
     plt.title(l)
     return dplot
-    
+# plota nspc espectros aleatorios 
 def pplot(data,nspc):
     import numpy as np
     import matplotlib.pyplot as plt
@@ -73,7 +74,7 @@ def pplot(data,nspc):
         plt.plot(data['wn'],r[i][:])
     plt.xlabel(' Número de onda')
     plt.show()
-    
+ # plota uma imagem na qual o intensidade do pixel é um coeff do emsc   
 def emsc(datta,b):
     import matplotlib.pyplot as plt
     import numpy as np
@@ -90,3 +91,80 @@ def emsc(datta,b):
     l = 'histograma do coeficente EMSC' + str(datta['filename'])[:-4]
     plt.title(l)
     plt.show()
+    
+## cria uma imagem baseado na intensidade e permite a vizualização do espectro de cada pixel
+def int_plt(dados,wnsel):
+    import numpy as np
+    import matplotlib.pyplot as plt
+    r = dados['r'].copy()
+    dx = dados['dx']
+    dy = dados['dy']
+    sel = dados['sel']
+    wn = dados['wn']
+    rr = np.zeros((sel.shape[0],r.shape[1]))
+    rr[sel,:] = r
+    sel = wn>wnsel
+    r = 0
+    rr = rr.reshape(dx,dy,-1)
+    plt.close('all')
+    plt.figure(1)
+    z = np.arange(0,rr.shape[2])
+    z = z[sel][0]
+    plt.pcolor(rr[:,:,z])
+    x = 15
+    y = 15
+    while (x > 14 or y > 14 ):
+        ver = plt.ginput(1)
+        x = int(ver[0][0])
+        y = int(ver[0][1])
+        print(x,'  ',y)
+        plt.close(2)
+        plt.figure(2)
+        plt.plot(wn,rr[y,x,:])
+        plt.title('espectro do pixel x='+str(x)+' y= '+ str(y))
+        plt.figure(1)
+    plt.close(1)
+    plt.close(2)
+
+
+## cria uma imagem baseado na area entre a e b e permite a vizualização do espectro de cada pixel     
+def area_plt(dados,a,b):
+    import numpy as np
+    import matplotlib.pyplot as plt
+    
+    sel = (dados['wn'] > (a)) &  (dados['wn'] < (b) )
+    r = dados['r'][:,sel]
+    area = np.trapz(r)
+    print(area.min)
+    dplot = np.zeros(dados['dx']*dados['dy']);
+    dplot[dados['sel']] = area
+    dplot =dplot.reshape(dados['dx'],dados['dy'])
+    plt.figure(1)
+    plt.pcolor(dplot, vmin=np.min(area), vmax=np.max(area))
+    plt.clim(np.min(area),np.max(area))
+    plt.colorbar()
+    l = 'imagem da area da banda entre ' +str(a)+ ' cm-1'+str(b)+ ' cm-1 \n ' + str(dados['filename'])[:-4]
+    plt.title(l)  
+    
+    r = dados['r'].copy()
+    dx = dados['dx']
+    dy = dados['dy']
+    sel = dados['sel']
+    wn = dados['wn']
+    rr = np.zeros((sel.shape[0],r.shape[1]))
+    rr[sel,:] = r
+    rr = rr.reshape(dx,dy,-1)
+    x = 15
+    y = 15
+    while (x > 14 or y > 14 ):
+        ver = plt.ginput(1)
+        x = int(ver[0][0])
+        y = int(ver[0][1])
+        print(x,'  ',y)
+        plt.close(2)
+        plt.figure(2)
+        plt.plot(wn,rr[y,x,:])
+        plt.title('espectro do pixel x='+str(x)+' y= '+ str(y))
+        plt.figure(1)
+    plt.close(1)
+    plt.close(2)

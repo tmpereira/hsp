@@ -121,7 +121,7 @@ def napc(dados,noise,npcs):
     d = dados['r']
     n = noise['r']
     import numpy as np
-    print('inicializando NAPC')
+    print('\n inicializando NAPC')
     sigmad = np.cov(d.T)
     sigman = np.cov(n.T)
     [a,s1,e1] = np.linalg.svd(sigman)
@@ -136,8 +136,7 @@ def napc(dados,noise,npcs):
     
     H = F.dot(G)
     meanspc = (np.tile(d.mean(0).reshape(1,-1),(d.shape[0],1)))
-    meandata =  d - meanspc
-    
+    meandata =  d - meanspc   
     
     scoresNAPC = H.T @ meandata.T
     scoresNAPC[npcs:,:] = 0
@@ -145,7 +144,7 @@ def napc(dados,noise,npcs):
     zcorr = np.linalg.solve(H.T,scoresNAPC).T
     
     dados['r'] = zcorr + meanspc
-    linha = '\n remoção de ruido usando somente redução de PCA com ' +str(n) + ' pcs'
+    linha = '\n remoção de ruido usando somente redução de PCA com ' +str(npcs) + ' pcs'
     print(linha,end='')
     dados['log'] = np.char.add(dados['log'],linha)
     return dados
@@ -168,7 +167,7 @@ def offset(data,ini,fim):
     return data
 
 # binarizar imagem fazer cada 2X2 pixel se tornar pixel unico
-    
+# quando binamos os dados a ultima linha coluna da img é retirada   
 def binned(data):
     import numpy as np
     import matplotlib.pyplot as plt    
@@ -177,13 +176,21 @@ def binned(data):
     dx = r.shape[0]
     dy = r.shape[1]
     dz = r.shape[2]
+    if (dx%2 == 0):
+        ik = 2
+    else:
+        ik = 3
     dxbin = int(np.floor(dx/2))-1
-    dybin = int(np.floor(dy/2))-1
+    if (dy%2 == 0):      
+        jk = 2
+    else:
+        jk = 3
+    dybin = int(np.floor(dy/2))-1    
     rbin = np.ones((dxbin,dybin,dz))
     jj = 0
     ii = 0
-    for i in range(0,dy-2,2):
-        for j in range(0,dx-2,2):
+    for i in range(0,dy-jk,2):
+        for j in range(0,dx-ik,2):
             sel = r[j:j+2,i:i+2,:];
             sel  = np.mean(sel.reshape(4,dz),axis=0)
             rbin[jj,ii,:] = sel
