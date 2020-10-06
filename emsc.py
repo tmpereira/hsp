@@ -12,8 +12,7 @@ def base(data,polyorder,norm = False):
     beta = np.linalg.lstsq(XX,r.T,rcond=-1)[0]
     spccorr = r - (XX[:,1:].dot(beta[1:,:]).T)
     if norm:
-        div = np.tile(beta[0,:].T.reshape(-1,1),(1,spccorr.shape[1]))
-        spccorr = spccorr/div
+        spccorr = spccorr/(beta[0,:].T[:,None])
     data['r'] = spccorr
     data['EMSC_model'] = XX
     data['EMSC_coeff'] = beta.T
